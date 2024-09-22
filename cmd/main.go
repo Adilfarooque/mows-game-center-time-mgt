@@ -1,13 +1,19 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"mows-game-center-time-mgt/cmd/handlers"
+
+	"github.com/gin-gonic/gin"
+)
 
 const port = ":8080"
 
 func main() {
 	r := gin.Default()
-	r.GET("/games", func(c *gin.Context) {
-		c.JSON(200, gin.H{"message": "Game list"})
-	})
+	r.GET("/games", handlers.GetGames)
+	r.GET("/games/name/:name", handlers.GetGamesByName)
+	r.POST("/games/create", handlers.AddNewGame)
+	r.PUT("/games/update/:id", handlers.UpdateGame)
+	r.DELETE("/games/delete/:id", handlers.RemoveGame)
 	r.Run(port)
 }

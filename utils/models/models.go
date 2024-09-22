@@ -33,6 +33,5 @@ type Payment struct{
 	Method string `json:"method"` //  e.g., "credit card", "cash", "wallet"
 	Timestamp string	`json:"timestamp"`
 	SessionID int `json:"session_id"` // reference to the session
-
 }
 
