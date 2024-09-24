@@ -10,7 +10,7 @@ const port = ":8080"
 
 func main() {
 	r := gin.Default()
-	r.GET("/games", handlers.GetGames)
+	r.GET("/games", handlers.GetAllGames)
 	r.GET("/games/name/:name", handlers.GetGamesByName)
 	r.POST("/games/create", handlers.AddNewGame)
 	r.PUT("/games/update/:id", handlers.UpdateGame)

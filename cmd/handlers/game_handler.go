@@ -11,7 +11,7 @@ import (
 var games []models.Games
 
 // Get All games
-func GetGames(c *gin.Context) {
+func GetAllGames(c *gin.Context) {
 	c.JSON(http.StatusOK, games)
 }
 
@@ -26,18 +26,17 @@ func GetGamesByName(c *gin.Context) {
 	}
 	c.JSON(http.StatusNotFound, gin.H{"message": "Game not found"})
 }
-
 // Add new game
 func AddNewGame(c *gin.Context) {
 	var addGame models.Games
 	if err := c.ShouldBindJSON(&addGame); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid game data"})
 		return
 	}
 	games = append(games, addGame)
-	c.JSON(http.StatusCreated, addGame)
+	c.JSON(http.StatusCreated, gin.H{"message":"Game added successfully","game":addGame})
 }
-
+//Update Existing 
 func UpdateGame(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	for i, game := range games {
@@ -64,3 +63,4 @@ func RemoveGame(c *gin.Context) {
 	}
 	c.JSON(http.StatusNotFound, gin.H{"message": "Game not found"})
 }
+
