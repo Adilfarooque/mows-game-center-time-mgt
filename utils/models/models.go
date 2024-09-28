@@ -34,4 +34,3 @@ type Payment struct{
 	Timestamp string	`json:"timestamp"`
 	SessionID int `json:"session_id"` // reference to the session
 }
-

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"mows-game-center-time-mgt/services"
 	"mows-game-center-time-mgt/utils/models"
 	"net/http"
 	"strconv"
@@ -33,11 +34,11 @@ func AddNewGame(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid game data"})
 		return
 	}
-	games = append(games, addGame)
+	games = services.AddGame(addGame)
 	c.JSON(http.StatusCreated, gin.H{"message":"Game added successfully","game":addGame})
 }
 //Update Existing 
-func UpdateGame(c *gin.Context) {
+//func UpdateGame(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	for i, game := range games {
 		if game.ID == id {
@@ -50,17 +51,32 @@ func UpdateGame(c *gin.Context) {
 		}
 	}
 	c.JSON(http.StatusNotFound, gin.H{"message": "Game not found"})
+//}
+
+func UpdateGame(c *gin.Context) {
+    id, _ := strconv.Atoi(c.Param("id"))
+    var updatedGame models.Games
+    if err := c.ShouldBindJSON(&updatedGame); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid game data"})
+        return
+    }
+    updated, err := services.UpdateGame(id, updatedGame)
+    if err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"message": "Game not found"})
+        return
+    }
+    c.JSON(http.StatusOK, gin.H{"game": updated})
 }
+
 
 func RemoveGame(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
-	for i, game := range games {
+		err := services.RemoveGame(id)
 		if game.ID == id {
 			games = append(games[:i], games[i+1:]...)
 			c.JSON(http.StatusOK, gin.H{"message": "Game deleted"})
 			return
 		}
-	}
 	c.JSON(http.StatusNotFound, gin.H{"message": "Game not found"})
 }
 
