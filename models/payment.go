@@ -1,10 +1,13 @@
 package models
 
-type Payment struct {
-	ID        int     `json:"id"`
-	UserID    int     `json:"user_id"`
-	Amount    float64 `json:"amount"`
-	Method    string  `json:"method"` //  e.g., "credit card", "cash", "wallet"
-	Timestamp string  `json:"timestamp"`
-	SessionID int     `json:"session_id"` // reference to the session
-}
+// import "time"
+
+// type Payment struct {
+// 	ID        int       `json:"id" gorm:"primaryKey"`
+// 	UserID    int       `json:"user_id" gorm:"not null"`
+// 	Amount    float64   `json:"amount" gorm:"not null"`
+// 	Method    string    `json:"method"` // e.g., "credit card", "digital wallet", "cash"
+// 	Status    string    `json:"status"` // e.g., "completed", "failed"
+// 	CreatedAt time.Time `json:"created_at"`
+// 	UpdatedAt time.Time `json:"updated_at"`
+// }

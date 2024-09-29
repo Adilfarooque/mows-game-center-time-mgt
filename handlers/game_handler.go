@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"mows-game-center-time-mgt/services"
 	"mows-game-center-time-mgt/models"
+	"mows-game-center-time-mgt/services"
 	"mows-game-center-time-mgt/utils/response"
 	"net/http"
 	"strconv"
@@ -10,85 +10,101 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var games []models.Games
+//var games []models.Game
 
+// -----------------------------ADMIN SIDE----------------------------//
 // Add new game
 func AddNewGame(c *gin.Context) {
-	var addGame models.Games
-	if err := c.ShouldBindJSON(&addGame); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid game data"})
+	var newGame models.Game
+	//Bind JSON to game struct
+	if err := c.ShouldBindJSON(&newGame); err != nil {
+		c.JSON(http.StatusBadRequest, response.ClientResponse(http.StatusBadRequest, "Invalid game data", nil, err.Error()))
 		return
 	}
-	games = services.AddGame()
-	c.JSON(http.StatusCreated, gin.H{"message":"Game added successfully","game":addGame})
+	//add service layer to add the game
+	addedGame, err := services.AddNewGame(newGame)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, response.ClientResponse(http.StatusInternalServerError, "Failed to add game", nil, err.Error()))
+		return
+	}
+	c.JSON(http.StatusCreated, response.ClientResponse(http.StatusCreated, "Game added successfully", addedGame, nil))
 }
 
 // Get All games
 func GetAllGames(c *gin.Context) {
 	//Fetch all games without pagination
-	game , err := services.GetAllGames()
-	if err != nil{
-		errRes := response.ClientResponse(http.StatusInternalServerError,"Could't retrieve games",nil,err.Error())
-		c.JSON(http.StatusInternalServerError,errRes)
+	games, err := services.GetAllGames()
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusInternalServerError, "Could't retrieve games", nil, err.Error())
+		c.JSON(http.StatusInternalServerError, errRes)
 		return
 	}
 	//Send Successfull response
-	success := response.ClientResponse(http.StatusOK,"Successfully retrieved all games",games,nil)
-	c.JSON(http.StatusOK,success)
+	success := response.ClientResponse(http.StatusOK, "Successfully retrieved all games", games, nil)
+	c.JSON(http.StatusOK, success)
 }
 
-// Get games by name
-func GetGamesByName(c *gin.Context) {
-	name := c.Param("name")
-	for _, game := range games {
-		if game.Name == name {
-			c.JSON(http.StatusOK, game)
-			return
-		}
+func GetGamesByID(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, response.ClientResponse(http.StatusBadRequest, "Invalid game ID", nil, err.Error()))
+		return
 	}
-	c.JSON(http.StatusNotFound, gin.H{"message": "Game not found"})
-}
-
-//Update Existing 
-//func UpdateGame(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
-	for i, game := range games {
-		if game.ID == id {
-			if err := c.ShouldBindJSON(&games[i]); err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-				return
-			}
-			c.JSON(http.StatusOK, games[i])
-			return
-		}
+	game, err := services.GetgameByID(id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, response.ClientResponse(http.StatusNotFound, "Game not found", nil, err.Error()))
+		return
 	}
-	c.JSON(http.StatusNotFound, gin.H{"message": "Game not found"})
-//}
-
-func UpdateGame(c *gin.Context) {
-    id, _ := strconv.Atoi(c.Param("id"))
-    var updatedGame models.Games
-    if err := c.ShouldBindJSON(&updatedGame); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid game data"})
-        return
-    }
-    updated, err := (id, updatedGame)
-    if err != nil {
-        c.JSON(http.StatusNotFound, gin.H{"message": "Game not found"})
-        return
-    }
-    c.JSON(http.StatusOK, gin.H{"game": updated})
+	c.JSON(http.StatusOK, response.ClientResponse(http.StatusOK, "Game retrieved successfully", game, nil))
 }
 
+func UpdateGameByID(c *gin.Context) {
+	// Get the game ID from the URL parameter
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, response.ClientResponse(http.StatusBadRequest, "Invalid game ID", nil, err.Error()))
+		return
+	}
+	// Bind the incoming JSON to the updatedGame struct
+	var updatedGame models.Game
+	if err := c.ShouldBindJSON(&updatedGame); err != nil {
+		c.JSON(http.StatusBadRequest, response.ClientResponse(http.StatusBadRequest, "Invalid input", nil, err.Error()))
+		return
+	}
+	// Call the service to update the game by ID
+	err = services.UpdateGameByID(id, updatedGame)
+	if err != nil {
+		c.JSON(http.StatusNotFound, response.ClientResponse(http.StatusNotFound, "Game not found", nil, err.Error()))
+		return
+	}
+	// Return a success response
+	c.JSON(http.StatusOK, response.ClientResponse(http.StatusOK, "Game updated successfully", updatedGame, nil))
+}
+
+func GetGameByName(c *gin.Context) {
+	title := c.Param("title")
+	game, err := services.GetGameByName(title)
+	if err != nil {
+		c.JSON(http.StatusNotFound, response.ClientResponse(http.StatusNotFound, "Game not found", nil, err.Error()))
+		return
+	}
+	c.JSON(http.StatusOK, response.ClientResponse(http.StatusOK, "Game retrived successfully", game, nil))
+}
 
 func RemoveGame(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
-		err := services.RemoveGame(id)
-		if game.ID == id {
-			games = append(games[:i], games[i+1:]...)
-			c.JSON(http.StatusOK, gin.H{"message": "Game deleted"})
-			return
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, response.ClientResponse(http.StatusBadRequest, "Invalid game ID", nil, err.Error()))
+		return
+	}
+	if err := services.RemoveGame(id); err != nil {
+		if err.Error() == "game not found" {
+			c.JSON(http.StatusNotFound, response.ClientResponse(http.StatusNotFound, "Game not found", nil, err.Error()))
+		} else {
+			c.JSON(http.StatusInternalServerError, response.ClientResponse(http.StatusInternalServerError, "Failed to delete game", nil, err.Error()))
 		}
-	c.JSON(http.StatusNotFound, gin.H{"message": "Game not found"})
+		return
+	}
+	c.JSON(http.StatusOK, response.ClientResponse(http.StatusOK, "Game deleted successfully", nil, nil))
 }
-

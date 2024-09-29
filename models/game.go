@@ -1,9 +1,15 @@
 package models
 
-type Games struct {
-	ID       int     `json:"id" gorm:"primarykey"`
-	Name     string  `json:"name"`
-	Duration string  `json:"duration"` // in minites
-	Category string  `json:"category"` //game category (arcade,racing)
-	Rating   float64 `json:"rating"`   //user rating for the game
+import "time"
+
+type Game struct {
+	ID         int       `json:"id" gorm:"primaryKey"`
+	Title      string    `json:"title" gorm:"not null"`
+	Category   string    `json:"category"`   // e.g., "racing", "arcade", "shooting"
+	Rating     float64   `json:"rating"`     // Average rating
+	Popularity int       `json:"popularity"` // Play count
+	Price      float64   `json:"price"`
+	ImageURL   string    `json:"image_url"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
 }

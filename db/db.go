@@ -29,11 +29,11 @@ func ConnectDatabase(confg config.Config) (*gorm.DB, error) {
 
 func runMigrations(db *gorm.DB) {
 	err := db.AutoMigrate(
-		&models.Games{},
+		&models.Game{},
 		&models.User{},
 		&models.Session{},
-		//&models.Admin{},
-		&models.Payment{},
+		//&models.Admin{}, // Ensure this model is properly defined
+		//&models.Payment{}, // Uncomment if defined correctly
 	)
 	if err != nil {
 		log.Fatalf("Failed to run migrations: %v", err)

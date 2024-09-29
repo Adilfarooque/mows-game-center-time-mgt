@@ -5,6 +5,7 @@ import (
 	"log"
 	"mows-game-center-time-mgt/config"
 	"mows-game-center-time-mgt/db"
+	"mows-game-center-time-mgt/routes"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,7 +23,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error connecting to the database:%v", err)
 	}
+
 	r := gin.Default()
+	//userGroup := r.Group("/user")
+	adminGroup := r.Group("/admin")
+	//routes.UserRoutes(userGroup, db)
+	routes.AdminRoutes(adminGroup, db)
 	// r.GET("/games", handlers.GetAllGames)
 	// r.GET("/games/name/:name", handlers.GetGamesByName)
 	// r.POST("/games/create", handlers.AddNewGame)
