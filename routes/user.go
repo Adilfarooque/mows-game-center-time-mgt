@@ -1,17 +1,17 @@
 package routes
 
 import (
-	"mows-game-center-time-mgt/cmd/handlers"
+	"mows-game-center-time-mgt/handlers"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
-func UserRoutes(r *gin.RouterGroup, db *gorm.DB) *gin.RouterGroup{
-	 games := r.Group("/games")
-	 {
-		games.GET("",handlers.GetAllGames)
-		games.POST("/search ")
-	 }
+func UserRoutes(r *gin.RouterGroup, db *gorm.DB) *gin.RouterGroup {
+	games := r.Group("/games")
+	{
+		games.GET("", handlers.GetAllGames)
+		games.POST("/search")
+	}
 	return r
 }
