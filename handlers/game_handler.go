@@ -43,7 +43,7 @@ func GetAllGames(c *gin.Context) {
 	success := response.ClientResponse(http.StatusOK, "Successfully retrieved all games", games, nil)
 	c.JSON(http.StatusOK, success)
 }
-
+//Get Game by ID
 func GetGamesByID(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -57,7 +57,7 @@ func GetGamesByID(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.ClientResponse(http.StatusOK, "Game retrieved successfully", game, nil))
 }
-
+//Update game 
 func UpdateGameByID(c *gin.Context) {
 	// Get the game ID from the URL parameter
 	idParam := c.Param("id")
@@ -81,7 +81,7 @@ func UpdateGameByID(c *gin.Context) {
 	// Return a success response
 	c.JSON(http.StatusOK, response.ClientResponse(http.StatusOK, "Game updated successfully", updatedGame, nil))
 }
-
+//Get game by name
 func GetGameByName(c *gin.Context) {
 	title := c.Param("title")
 	game, err := services.GetGameByName(title)
@@ -91,7 +91,7 @@ func GetGameByName(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.ClientResponse(http.StatusOK, "Game retrived successfully", game, nil))
 }
-
+//Remove game by id
 func RemoveGame(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {

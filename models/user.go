@@ -7,3 +7,4 @@ type User struct {
 	Role     string `json:"role"`    //"player" or "admin"
 	Credits  int    `json:"credits"` //represent the balance that users use to book game sessions.
 }
+
