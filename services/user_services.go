@@ -70,3 +70,6 @@ func GetUserByID(id int) (models.User, error) {
 	return user, nil
 }
 
+func AddNewUser(user *models.User)error{
+	return repository.AddNewUser(*user)
+}

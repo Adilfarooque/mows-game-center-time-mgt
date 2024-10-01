@@ -23,6 +23,7 @@ func AdminRoutes(r *gin.RouterGroup, db *gorm.DB) *gin.RouterGroup {
 	//Users routes
 	users := r.Group("/users")
 	{
+		users.POST("",handlers.AddNewUser)
 		users.GET("", handlers.GetAllUsers)
 		users.DELETE(":id",handlers.DeleteUser)
 	}
