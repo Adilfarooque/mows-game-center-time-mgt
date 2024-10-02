@@ -22,7 +22,7 @@ func AddNewUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response.ClientResponse(http.StatusBadRequest, "Role must be 'admin' or 'player'", nil, "Invalid role"))
 		return
 	}
-	
+
 	err := services.AddNewUser(&newUser)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, response.ClientResponse(http.StatusInternalServerError, "Failed to create user", nil, err.Error()))
@@ -57,6 +57,29 @@ func GetUserByID(c *gin.Context) {
 	}
 	successRes := response.ClientResponse(http.StatusOK, "User retrived successfully", user, err.Error())
 	c.JSON(http.StatusOK, successRes)
+}
+
+// Update a user details
+func UpdateUser(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, response.ClientResponse(http.StatusBadRequest, "Invalid user ID", nil, err.Error()))
+		return
+	}
+
+	var updateUser models.User
+	if err = c.ShouldBindJSON(&updateUser); err != nil {
+		c.JSON(http.StatusBadRequest, response.ClientResponse(http.StatusBadRequest, "Invalid user", nil, err.Error()))
+		return
+	}
+
+	err = services.UpdateUser(id, updateUser)
+	if err != nil {
+		c.JSON(http.StatusNotFound, response.ClientResponse(http.StatusNotFound, "User not found", nil, err.Error()))
+		return
+	}
+	c.JSON(http.StatusOK, response.ClientResponse(http.StatusOK, "User updated successfully", updateUser, nil))
+
 }
 
 // Delete User
