@@ -9,7 +9,7 @@ type Game struct {
 	Rating     float64   `json:"rating"`     // Average rating
 	Popularity int       `json:"popularity"` // Play count
 	Price      float64   `json:"price"`
-	ImageURL   []string  `json:"image_url"`
+	ImageURL   string    `json:"image_url"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
 }

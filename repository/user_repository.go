@@ -51,7 +51,7 @@ func AddNewUser(user *models.User) error {
 
 //Update user
 func UpdateUser(id int, updateUser *models.User)error{
-	if err := db.DB.Model(&models.User{}).Where(CheckUserAvailabilityWithID(id)).Updates(updateUser).Error ; err != nil{
+	if err := db.DB.Model(&models.User{}).Where("id = ?",id).Updates(updateUser).Error ; err != nil{
 		return err
 	}
 	return nil

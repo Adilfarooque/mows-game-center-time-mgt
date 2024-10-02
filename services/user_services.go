@@ -78,7 +78,8 @@ func AddNewUser(user *models.User) error {
 func UpdateUser(id int, updateUser *models.User)error{
 	exists := repository.CheckUserAvailabilityWithID(id)
 	if !exists {
-		return errors.New("User not found")
+		return errors.New("user not found")
 	}
 	return repository.UpdateUser(id,updateUser)
 }
+

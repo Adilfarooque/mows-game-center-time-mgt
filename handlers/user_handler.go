@@ -61,7 +61,12 @@ func GetUserByID(c *gin.Context) {
 
 // Update a user details
 func UpdateUser(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+	idParm := c.Param("id")
+	if idParm == ""{
+		c.JSON(http.StatusBadRequest,response.ClientResponse(http.StatusBadRequest,"User ID is required",nil,""))
+		return
+	}
+	id, err := strconv.Atoi(idParm)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, response.ClientResponse(http.StatusBadRequest, "Invalid user ID", nil, err.Error()))
 		return
