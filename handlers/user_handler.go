@@ -69,17 +69,16 @@ func UpdateUser(c *gin.Context) {
 
 	var updateUser models.User
 	if err = c.ShouldBindJSON(&updateUser); err != nil {
-		c.JSON(http.StatusBadRequest, response.ClientResponse(http.StatusBadRequest, "Invalid user", nil, err.Error()))
+		c.JSON(http.StatusBadRequest, response.ClientResponse(http.StatusBadRequest, "Failed to parse request body", nil, err.Error()))
 		return
 	}
 
-	err = services.UpdateUser(id, updateUser)
+	err = services.UpdateUser(id, &updateUser)
 	if err != nil {
 		c.JSON(http.StatusNotFound, response.ClientResponse(http.StatusNotFound, "User not found", nil, err.Error()))
 		return
 	}
 	c.JSON(http.StatusOK, response.ClientResponse(http.StatusOK, "User updated successfully", updateUser, nil))
-
 }
 
 // Delete User
@@ -98,3 +97,4 @@ func DeleteUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.ClientResponse(http.StatusOK, "User delete successfully", nil, nil))
 }
+

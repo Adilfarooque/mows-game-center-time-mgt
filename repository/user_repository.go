@@ -41,9 +41,17 @@ func GetUserByID(id int) (models.User, error) {
 	}
 	return user, nil
 }
-
+//Add new user
 func AddNewUser(user *models.User) error {
 	if err := db.DB.Create(user).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+//Update user
+func UpdateUser(id int, updateUser *models.User)error{
+	if err := db.DB.Model(&models.User{}).Where(CheckUserAvailabilityWithID(id)).Updates(updateUser).Error ; err != nil{
 		return err
 	}
 	return nil
