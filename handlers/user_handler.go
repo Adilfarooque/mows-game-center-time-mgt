@@ -10,6 +10,28 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Create new user
+func AddNewUser(c *gin.Context) {
+	var newUser models.User
+	if err := c.ShouldBindJSON(&newUser); err != nil {
+		c.JSON(http.StatusBadRequest, response.ClientResponse(http.StatusBadRequest, "Invalid user data", nil, err.Error()))
+		return
+	}
+
+	if newUser.Role != "admin" && newUser.Role != "player" {
+		c.JSON(http.StatusBadRequest, response.ClientResponse(http.StatusBadRequest, "Role must be 'admin' or 'player'", nil, "Invalid role"))
+		return
+	}
+	
+	err := services.AddNewUser(&newUser)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, response.ClientResponse(http.StatusInternalServerError, "Failed to create user", nil, err.Error()))
+		return
+	}
+
+	c.JSON(http.StatusCreated, response.ClientResponse(http.StatusCreated, "User created successfully", newUser, nil))
+}
+
 // Get all users
 func GetAllUsers(c *gin.Context) {
 	users, err := services.GetAllUsers()
@@ -52,21 +74,4 @@ func DeleteUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response.ClientResponse(http.StatusOK, "User delete successfully", nil, nil))
-}
-
-// Create new user
-func AddNewUser(c *gin.Context) {
-	var newUser models.User
-	if err := c.ShouldBindJSON(&newUser); err != nil {
-		c.JSON(http.StatusBadRequest, response.ClientResponse(http.StatusBadRequest, "Invalid user data", nil, err.Error()))
-		return
-	}
-
-	err := services.AddNewUser(&newUser)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, response.ClientResponse(http.StatusInternalServerError, "Failed to create user", nil, err.Error()))
-		return
-	}
-
-	c.JSON(http.StatusCreated, response.ClientResponse(http.StatusCreated, "User created successfully", newUser, nil))
 }

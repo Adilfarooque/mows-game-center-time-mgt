@@ -23,14 +23,15 @@ func DeleteUser(id int) error {
 	return nil
 }
 
-func CheckUserAvailabilityWithID(userID int)bool{
+func CheckUserAvailabilityWithID(userID int) bool {
 	var count int64
-	err := db.DB.Model(&models.User{}).Where("id = ?",userID).Count(&count).Error
-	if err != nil{
+	err := db.DB.Model(&models.User{}).Where("id = ?", userID).Count(&count).Error
+	if err != nil {
 		return false
 	}
 	return count > 0
 }
+
 // Retrieves a user by their ID
 func GetUserByID(id int) (models.User, error) {
 	var user models.User
@@ -41,6 +42,9 @@ func GetUserByID(id int) (models.User, error) {
 	return user, nil
 }
 
-func AddNewUser(user models.User)error{
-	return db.DB.Create(user).Error
+func AddNewUser(user *models.User) error {
+	if err := db.DB.Create(user).Error; err != nil {
+		return err
+	}
+	return nil
 }
