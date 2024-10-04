@@ -1,43 +1,23 @@
 package services
 
-// import (
-// 	"errors"
-// 	"mows-game-center-time-mgt/utils/models"
-// )
+import (
+	"mows-game-center-time-mgt/models"
+	"mows-game-center-time-mgt/repository"
+	"time"
+)
 
-// var sessions []models.Session
+func BookGameSession(sessionRequest *models.SessionRequest)error{
+	return repository.BookGameSession(sessionRequest)
+}
 
-// // Start a new game session
-// func StartSession(newSession models.Session) models.Session {
-// 	newSession.ID = len(sessions) + 1
-// 	newSession.Status = "ongoing"
-// 	sessions = append(sessions, newSession)
-// 	return newSession
-// }
+func CheckGameAvailability(gameID int,startTime,endTime time.Time)(bool,error){
+	return repository.CheckGameAvailability(gameID,startTime,endTime)
+}
 
-// // End a session
-// func EndSession(id int) (models.Session, error) {
-// 	for i, session := range sessions {
-// 		if session.ID == id && session.Start == "ongoing" {
-// 			sessions[i].Status = "completed"
-// 			//Calculate the total price (game duration * rate)
-// 			sessions[i].TotalPrice = calculateSessionPrice(session.GameID, session.Start, session.End)
-// 			return sessions[i], nil
-// 		}
-// 	}
-// 	return models.Session{}, errors.New("session not found or already ended")
-// }
+func CancelSession(sessionID string)error{
+	return repository.CancelSession(sessionID)
+}
 
-// func calculateSessionPrice(gameID int, start, end string) float64 {
-
-// }
-
-// func GetSessionsForUser(userID int) []models.Session{
-// 	var userSessions []models.Session
-// 	for _,session := range sessions{
-// 		if session.UserID == userID{
-// 			userSessions = append(userSessions, session)
-// 		}
-// 	}
-// 	return userSessions
-// }
+func RescheduleSession(sessionID string, rescheduleRequest *models.SessionRescheduleRequest) error {
+	return repository.RescheduleSession(sessionID, rescheduleRequest)
+}
