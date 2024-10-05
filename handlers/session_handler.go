@@ -119,7 +119,7 @@ func StartGameSession(c *gin.Context) {
 
 	sessionRequest.StartTime = time.Now()
 
-	err := services.StartGameSession(&sessionRequest)
+	err = services.StartGameSession(&sessionRequest)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, response.ClientResponse(http.StatusInternalServerError, "Failed to start game session", nil, err.Error()))
 		return

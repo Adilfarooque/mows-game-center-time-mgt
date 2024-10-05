@@ -21,3 +21,11 @@ func CancelSession(sessionID string)error{
 func RescheduleSession(sessionID string, rescheduleRequest *models.SessionRescheduleRequest) error {
 	return repository.RescheduleSession(sessionID, rescheduleRequest)
 }
+
+func StartGameSession(sessionRequest *models.SessionRequest)error{
+	return repository.StartGameSession(sessionRequest)
+}
+
+func CheckActiveGameSession(gameID string,UserID string)(*models.Session,error){
+	return repository.GetActiveGameSession(gameID,UserID)
+}

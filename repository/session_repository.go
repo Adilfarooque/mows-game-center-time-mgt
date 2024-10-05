@@ -4,6 +4,8 @@ import (
 	"mows-game-center-time-mgt/db"
 	"mows-game-center-time-mgt/models"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 func BookGameSession(sessionRequest *models.SessionRequest) error {
@@ -35,4 +37,28 @@ func RescheduleSession(sessionID string, rescheduleRequest *models.SessionResche
 		"end_time":   rescheduleRequest.NewEndTime,
 	}
 	return db.DB.Model(&models.Session{}).Where("id = ?", sessionID).Updates(updates).Error
+}
+
+func StartGameSession(sessionRequest *models.SessionRequest) error {
+	session := models.Session{
+		GameID:    sessionRequest.GameID,
+		UserID:    sessionRequest.UserID,
+		StartTime: sessionRequest.StartTime,
+	}
+	if err := db.DB.Create(&session).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func GetActiveGameSession(gameID, userID string) (*models.Session, error) {
+	var session models.Session
+	err := db.DB.Where("game_id = ? AND user_id = ? AND end_time IS NULL", gameID, userID).First(&session).Error
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &session, nil
 }
