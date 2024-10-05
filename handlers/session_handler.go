@@ -25,7 +25,7 @@ func BookGameSession(c *gin.Context) {
 		return
 	}
 	if !available {
-		c.JSON(http.StatusConflict, response.ClientResponse(http.StatusConflict, "Failed to book session", nil, err.Error()))
+		c.JSON(http.StatusConflict, response.ClientResponse(http.StatusConflict, "Failed to book session", nil, nil))
 		return
 	}
 	c.JSON(http.StatusCreated, response.ClientResponse(http.StatusCreated, "Game session booked successfully", sessionRequest, nil))
@@ -96,4 +96,33 @@ func RescheduleSession(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, response.ClientResponse(http.StatusOK, "Session rescheduled successfully", rescheduleRequest, nil))
+}
+
+// user starts a game and time is tracked
+func StartGameSession(c *gin.Context) {
+	var sessionRequest models.SessionRequest
+	if err := c.ShouldBindJSON(&sessionRequest); err != nil {
+		c.JSON(http.StatusBadRequest, response.ClientResponse(http.StatusBadRequest, "Invalid session data", nil, err.Error()))
+		return
+	}
+
+	//if the user is already in active session for the same game
+	activeSession, err := services.CheckActiveGameSession(sessionRequest.GameID, sessionRequest.UserID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, response.ClientResponse(http.StatusInternalServerError, "Failed to check active session", nil, err.Error()))
+		return
+	}
+	if activeSession != nil {
+		c.JSON(http.StatusConflict, response.ClientResponse(http.StatusConflict, "User already has an active session for this game", nil, "Active session detected"))
+		return
+	}
+
+	sessionRequest.StartTime = time.Now()
+
+	err := services.StartGameSession(&sessionRequest)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, response.ClientResponse(http.StatusInternalServerError, "Failed to start game session", nil, err.Error()))
+		return
+	}
+	c.JSON(http.StatusOK, response.ClientResponse(http.StatusOK, "Game session started successfully", sessionRequest, nil))
 }
