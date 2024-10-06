@@ -62,3 +62,11 @@ func GetActiveGameSession(gameID, userID string) (*models.Session, error) {
 	}
 	return &session, nil
 }
+
+func EndGameSession(sessionID string,endTime time.Time,duration time.Duration)error{
+	updates := map[string]interface{}{
+		"end_time":endTime,
+		"duration":duration,
+	}
+	return db.DB.Model(&models.Session{}).Where("id = ?",sessionID).Updates(updates).Error
+}

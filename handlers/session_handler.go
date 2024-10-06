@@ -126,3 +126,31 @@ func StartGameSession(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.ClientResponse(http.StatusOK, "Game session started successfully", sessionRequest, nil))
 }
+
+// End game session
+func EndGameSession(c *gin.Context) {
+	sessionID := c.Param("id")
+
+	//find the session by ID
+	session, err := services.GetGameSessionByID(sessionID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, response.ClientResponse(http.StatusNotFound, "Session not found", nil, err.Error()))
+		return
+	}
+
+	session.EndTime = time.Now()
+	//calculating the duration of the session
+	duration := session.EndTime.Sub(session.StartTime)
+
+	//Update the session with the end time and duration
+	err = services.EndGameSession(sessionID, session.EndTime, duration)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, response.ClientResponse(http.StatusInternalServerError, "Failed to end game session", nil, err.Error()))
+		return
+	}
+	c.JSON(http.StatusOK, response.ClientResponse(http.StatusOK, "Game session ended successfully", map[string]interface{}{
+		"session_id": sessionID,
+		"duration":   duration,
+	}, nil))
+
+}
