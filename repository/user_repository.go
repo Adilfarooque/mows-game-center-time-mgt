@@ -3,6 +3,9 @@ package repository
 import (
 	"mows-game-center-time-mgt/db"
 	"mows-game-center-time-mgt/models"
+	"time"
+
+	"gorm.io/gorm"
 )
 
 // Get All user details
@@ -41,7 +44,8 @@ func GetUserByID(id int) (models.User, error) {
 	}
 	return user, nil
 }
-//Add new user
+
+// Add new user
 func AddNewUser(user *models.User) error {
 	if err := db.DB.Create(user).Error; err != nil {
 		return err
@@ -49,10 +53,22 @@ func AddNewUser(user *models.User) error {
 	return nil
 }
 
-//Update user
-func UpdateUser(id int, updateUser *models.User)error{
-	if err := db.DB.Model(&models.User{}).Where("id = ?",id).Updates(updateUser).Error ; err != nil{
+// Update user
+func UpdateUser(id int, updateUser *models.User) error {
+	if err := db.DB.Model(&models.User{}).Where("id = ?", id).Updates(updateUser).Error; err != nil {
 		return err
 	}
 	return nil
+}
+
+// (Admin forcibly ends a game session)
+func AdminEndGameSession(db *gorm.DB, sessionID string, endTime time.Time) error {
+	//Find the session by ID
+	var session models.Session
+	if err := db.First(&session, "id = ?", sessionID).Error; err != nil {
+		return err
+	}
+	session.EndTime = endTime
+	session.Status = "completed"
+	return db.Save(&session).Error
 }

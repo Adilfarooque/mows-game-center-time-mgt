@@ -2,8 +2,10 @@ package services
 
 import (
 	"errors"
+	"mows-game-center-time-mgt/db"
 	"mows-game-center-time-mgt/models"
 	"mows-game-center-time-mgt/repository"
+	"time"
 )
 
 // import (
@@ -70,16 +72,20 @@ func GetUserByID(id int) (models.User, error) {
 	return user, nil
 }
 
-//Add new client
+// Add new client
 func AddNewUser(user *models.User) error {
 	return repository.AddNewUser(user)
 }
 
-func UpdateUser(id int, updateUser *models.User)error{
+func UpdateUser(id int, updateUser *models.User) error {
 	exists := repository.CheckUserAvailabilityWithID(id)
 	if !exists {
 		return errors.New("user not found")
 	}
-	return repository.UpdateUser(id,updateUser)
+	return repository.UpdateUser(id, updateUser)
 }
 
+func AdminEndGameSession(sessionID string) error {
+	endTime := time.Now()
+	return repository.AdminEndGameSession(db.DB, sessionID, endTime)
+}

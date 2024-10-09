@@ -103,3 +103,14 @@ func DeleteUser(c *gin.Context) {
 	c.JSON(http.StatusOK, response.ClientResponse(http.StatusOK, "User delete successfully", nil, nil))
 }
 
+//(Admin forcibly ends a game session)
+func AdminEndGameSession(c *gin.Context){
+	session_ID := c.Param("id")
+
+	err := services.AdminEndGameSession(session_ID)
+	if err != nil{
+		c.JSON(http.StatusInternalServerError,response.ClientResponse(http.StatusInternalServerError,"Failed to end game session",nil,err.Error()))
+		return
+	}
+	c.JSON(http.StatusOK,response.ClientResponse(http.StatusOK,"Game session ended successfully",nil,nil))
+}
